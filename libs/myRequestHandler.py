@@ -11,26 +11,18 @@ class JSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 class MyRequestHandler(tornado.web.RequestHandler):
-    def resp(self, code=None, msg=None, desc=None, ext_data=None):
+    def resp(self, code=None, msg=None, data=None):
         """返回值格式整理，所有/api/的数据接口，都应该采用此函数处理返回值"""
         resp_dict = {}
-        resp_dict['RetSucceed'] = True
-        resp_dict['Succeed'] = code == 200 or not code
         if code is None:
-            resp_dict['Code'] = code = 200
+            resp_dict['code'] = 200
         else:
-            resp_dict['Code'] = code
+            resp_dict['code'] = code
         if msg is None:
-            resp_dict['Message'] = {}
+            resp_dict['msg'] = '成功'
         else:
-            resp_dict['Message'] = msg
-        if desc is None:
-            resp_dict['Desc'] = ''
-        else:
-            resp_dict['Desc'] = desc
-        if ext_data is None:
-            resp_dict['extData'] = ''
-        else:
-            resp_dict['extData'] = ext_data
+            resp_dict['msg'] = msg
+        if data is not None:
+            resp_dict['data'] = data
         json_str = json.dumps(resp_dict, ensure_ascii=False, cls=JSONEncoder)
         return self.write(json_str)

@@ -17,6 +17,9 @@ class Application(tornado.web.Application):
             # 删除用户
             (r"/user/delete", user.DeleteByIdHandler),
 
+            # 添加用户
+            (r"/user/add", user.AddHandler),
+
             # StaticFileHandler,要放在所有路由的最下面
             (r'/(.*)$', tornado.web.StaticFileHandler, {"path": os.path.join(config.BASE_DIR, "static/html"),
                                                         "default_filename": "index.html"}),

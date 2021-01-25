@@ -1,3 +1,4 @@
+from logs.log import Logger
 from .myPyMysql import PyMySQL
 import config
 
@@ -7,26 +8,26 @@ class ORM(object):
     table_name_prefix = config.mysql["tableNamePrefix"]
 
     def save(self):
-        # insert into tableName (name,age) values('tyui',32)
+        # insert into tableName (field1, field2) values(value1, value2)
         #                &        &   &             &    &
         # 表名
-        table_name = (self.__class__.__name__).lower()
-        fieldsStr = valuesStr = "("
+        table_name = config.mysql["tableNamePrefix"] + self.__class__.__name__.lower()
+        fields_str = values_str = "("
         for field in self.__dict__:
-            fieldsStr += (field + ",")
+            fields_str += (field + ",")
             if isinstance(self.__dict__[field], str):
-                valuesStr += ("'" + self.__dict__[field] + "',")
+                values_str += ("'" + self.__dict__[field] + "',")
             else:
-                valuesStr += (str(self.__dict__[field]) + ",")
-        # (name,age)
-        fieldsStr = fieldsStr[:len(fieldsStr) - 1] + ")"
-        # ('tyui',32)
-        valuesStr = valuesStr[:len(valuesStr) - 1] + ")"
-        sql = "insert into " + table_name + " " + fieldsStr + " values " + valuesStr
-
-        print(sql)
+                values_str += (str(self.__dict__[field]) + ",")
+        # (field1, field2)
+        fields_str = fields_str[:len(fields_str) - 1] + ")"
+        # (value1, value2)
+        values_str = values_str[:len(values_str) - 1] + ")"
+        sql = "insert into " + table_name + " " + fields_str + " values " + values_str
+        log = Logger()
+        log.info(sql)
         db = PyMySQL()
-        db.insert(sql)
+        return db.insert(sql)
 
     @classmethod
     def delete(cls, _id):
@@ -34,15 +35,20 @@ class ORM(object):
         if _id <= 0:
             return 0
         table_name = cls.table_name_prefix +(cls.__name__).lower()
-        sql = "delete from " + table_name + " where id = " + str(_id)
+        sql = "delete from {} where id = %s".format(table_name)
         db = PyMySQL()
-        return db.delete(sql)
+        return db.delete(sql, _id)
+
+    @classmethod
+    def update(cls, sql, *args):
+        db = PyMySQL()
+        return db.update(sql, args)
 
     @classmethod
     def get_all(cls):
         # select * from tableName
         table_name = cls.table_name_prefix +(cls.__name__).lower()
-        sql = "select * from " + table_name
+        sql = "select * from {}".format(table_name)
         db = PyMySQL()
         return db.get_all_obj(sql, table_name)
 
