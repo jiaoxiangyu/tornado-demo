@@ -30,3 +30,11 @@ settings = {
     # 关闭当前项目自动转义
     # "autoescape":None,
 }
+
+# 日志配置
+log = {
+    # 本地日志文件地址
+    "filePath": os.path.join(BASE_DIR, 'logs/tornado-demo.log')
+    # 正式日志文件地址
+    # "filePath": os.path.join('/log/tornado-demo/app.log')
+}

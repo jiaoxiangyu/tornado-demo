@@ -1,5 +1,8 @@
+from tokenize import String
+
 import pymysql
 import config
+from logs.log import Logger
 
 
 def singleton(cls, *args, **kwargs):
@@ -29,6 +32,7 @@ class PyMySQL(object):
         self.db.close()
 
     def get_one(self, sql):
+        log = Logger()
         res = None
         try:
             self.connet()
@@ -36,12 +40,12 @@ class PyMySQL(object):
             res = self.cursor.fetchone()
             self.close()
         except Exception as err:
-            print("查询sql=", sql)
-            print("查询失败,", err)
+            log.error("查询sql: {}".format(sql))
+            log.error("查询失败: {}".format(err))
         return res
 
     def get_all(self, sql):
-
+        log = Logger()
         res = ()
         try:
             self.connet()
@@ -49,8 +53,8 @@ class PyMySQL(object):
             res = self.cursor.fetchall()
             self.close()
         except Exception as err:
-            print("查询sql=", sql)
-            print("查询失败,", err)
+            log.error("查询sql: {}".format(sql))
+            log.error("查询失败: {}".format(err))
         return res
 
     def get_all_obj(self, sql, tableName, *args):
@@ -87,6 +91,7 @@ class PyMySQL(object):
         return self.__edit(sql)
 
     def __edit(self, sql):
+        log = Logger()
         count = 0
         try:
             self.connet()
@@ -94,7 +99,7 @@ class PyMySQL(object):
             self.db.commit()
             self.close()
         except Exception as err:
-            print("查询sql=", sql)
-            print("事物提交失败, ", err)
+            log.error("查询sql: {}".format(sql))
+            log.error("查询失败: {}".format(err))
             self.db.rollback()
         return count

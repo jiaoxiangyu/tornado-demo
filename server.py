@@ -5,6 +5,7 @@ import tornado.httpserver
 
 from application import Application
 import config
+from logs.log import Logger
 
 if __name__ == "__main__":
     # 建立路由表
@@ -17,6 +18,8 @@ if __name__ == "__main__":
     else:
         # server.start(0)  # Fork 多个子进程
         server.start()  # Fork 单个进程
-    print('Tornado app running')
+
+    log = Logger()
+    log.info('Tornado app running')
     # 开始事件
     tornado.ioloop.IOLoop.current().start()
