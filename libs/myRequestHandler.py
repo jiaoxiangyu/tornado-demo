@@ -1,14 +1,20 @@
-
+import datetime
 import json
 import tornado.web
 from bson import ObjectId
 
+
 class JSONEncoder(json.JSONEncoder):
-    '用于格式化mongo取出数据中的ObjectId对象'
-    def default(self, o):
-        if isinstance(o, ObjectId):
-            return str(o)
-        return json.JSONEncoder.default(self, o)
+    # 格式化datetime
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            return json.JSONEncoder.default(self, obj)
+        # '用于格式化mongo取出数据中的ObjectId对象'
+        # if isinstance(o, ObjectId):
+        #     return str(o)
+        # return json.JSONEncoder.default(self, o)
 
 class MyRequestHandler(tornado.web.RequestHandler):
     def resp(self, code=None, msg=None, data=None):
